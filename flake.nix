@@ -13,12 +13,12 @@
   # ./multicall.nix for the link mechanics.
   #
   # Crypto: full CRYPTO=OPENSSL (upstream default), so rtmpe:// / rtmpte:// /
-  # rtmps:// and SWF verification all work. The `nix-lib` overlay used by
-  # ffmpeg builds librtmp.a with NO_CRYPTO (ffmpeg's own mbedtls covers
-  # rtmps://); the standalone tool's closure is independent, so it keeps the
-  # crypto the CLI is actually for. rtmpdump only offers OpenSSL / GnuTLS /
-  # PolarSSL, and its PolarSSL path is the obsolete 1.x API (no drop-in path
-  # to nixpkgs' mbedtls 3.x) — OpenSSL is the working full-feature option.
+  # rtmps:// and SWF verification all work. This is the documented exception
+  # to the mbedtls-over-OpenSSL policy (docs/crypto-backend.md): rtmpdump
+  # only offers OpenSSL / GnuTLS / PolarSSL, and its PolarSSL path is the
+  # obsolete 1.x API (no drop-in to nixpkgs' mbedtls 3.x), so OpenSSL is the
+  # only working full-feature option. ffmpeg sidesteps this entirely — it
+  # drops --enable-librtmp and uses native rtmp via its own mbedtls.
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
