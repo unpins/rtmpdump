@@ -46,6 +46,10 @@ nix build github:unpins/rtmpdump
 
 The first invocation will offer to add the [unpins.cachix.org](https://unpins.cachix.org) substituter so most pulls come pre-built.
 
+## Man pages
+
+`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. The same pages ride in the Windows `rtmp.exe`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
+
 ## Manual download
 
 The [Releases](https://github.com/unpins/rtmpdump/releases) page has standalone binaries for manual download.

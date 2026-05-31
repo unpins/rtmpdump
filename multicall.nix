@@ -183,6 +183,14 @@ CBODY
       while IFS= read -r a; do
         [ -n "$a" ] && ln -s ${name} "$out/bin/$a"
       done < multicall/apps.list
+
+      # Embed the two CLI man pages (committed roff at the source root).
+      # rtmpsrv/rtmpsuck have no upstream man; librtmp.3 is library API doc,
+      # not a CLI tool. withMan harvests $out/share/man for native/darwin;
+      # the Windows build embeds the same two via flake.nix's winManRoot.
+      [ -f rtmpdump.1 ] && install -Dm644 rtmpdump.1 "$out/share/man/man1/rtmpdump.1"
+      [ -f rtmpgw.8 ]   && install -Dm644 rtmpgw.8   "$out/share/man/man8/rtmpgw.8"
+
       runHook postInstall
     '';
   });
