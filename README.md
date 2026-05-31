@@ -48,7 +48,7 @@ The first invocation will offer to add the [unpins.cachix.org](https://unpins.ca
 
 ## Man pages
 
-`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. The same pages ride in the Windows `rtmp.exe`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
+`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
 
 ## Manual download
 
