@@ -32,23 +32,14 @@
         makeFlags = (oa.makeFlags or [ ]) ++ [ "SHARED=no" ];
       });
 
-      # Windows man set: rtmpdump.1 + rtmpgw.8 (the only two CLI man pages
-      # upstream ships — rtmpsrv/rtmpsuck have none). Without an explicit
-      # winManRoot the graft would hunt for a nixpkgs `rtmp` attr (our
-      # `name`), which doesn't exist → null → no man on the .exe. Pinning it
-      # also dodges nixpkgs rtmpdump's gzipped pages + its library-only
-      # librtmp.3. Built from the same source the multicall installs from, on
-      # x86_64-linux (the Windows runner), so the .exe man == native man.
-      pkgsX = unpins-lib.inputs.nixpkgs.legacyPackages.x86_64-linux;
-      rtmpWinMan = pkgsX.runCommand "rtmp-win-man" { } ''
-        install -Dm644 ${pkgsX.rtmpdump.src}/rtmpdump.1 $out/share/man/man1/rtmpdump.1
-        install -Dm644 ${pkgsX.rtmpdump.src}/rtmpgw.8   $out/share/man/man8/rtmpgw.8
-      '';
+      # Man set: rtmpdump.1 + rtmpgw.8 (the only two CLI man pages upstream
+      # ships — rtmpsrv/rtmpsuck have none). multicall.nix installs both from
+      # the source tree into $out/share/man on EVERY target, so the windows
+      # .exe harvests its OWN man — same source, same pages as native, no graft.
     in
     ulib.mkStandaloneFlake {
       inherit self;
       name = "rtmp";
-      winManRoot = rtmpWinMan;
 
       build = pkgs:
         let sp = pkgs.pkgsStatic; in
