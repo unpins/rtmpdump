@@ -1,6 +1,6 @@
 # rtmpdump
 
-Standalone build of the [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streaming toolkit.
+Standalone build of the [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streaming programs.
 
 [![Build](https://github.com/unpins/rtmpdump/actions/workflows/rtmpdump.yml/badge.svg)](https://github.com/unpins/rtmpdump/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
@@ -9,12 +9,7 @@ Standalone build of the [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streamin
 
 Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
 
-Download, serve and inspect RTMP streams. Ships as one binary providing the upstream programs:
-
-- `rtmpdump` — download an RTMP/RTMPE/RTMPS stream to a file.
-- `rtmpgw` — HTTP gateway that proxies RTMP streams over HTTP.
-- `rtmpsrv` — minimal RTMP server that logs the parameters a client connects with.
-- `rtmpsuck` — transparent proxy that captures streams passing through it.
+Download, serve and inspect RTMP streams.
 
 ## Usage
 
@@ -32,6 +27,15 @@ unpin install rtmpdump
 ```
 
 `unpin install rtmpdump` creates the `rtmpdump`, `rtmpgw`, `rtmpsrv`, and `rtmpsuck` commands.
+
+## Programs
+
+| command | what it does |
+| --- | --- |
+| `rtmpdump` | download an RTMP/RTMPE/RTMPS stream to a file |
+| `rtmpgw` | HTTP gateway that proxies RTMP over HTTP |
+| `rtmpsrv` | minimal RTMP server that logs a client's connect parameters |
+| `rtmpsuck` | transparent proxy that captures streams passing through it |
 
 ## Build locally
 
