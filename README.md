@@ -9,33 +9,29 @@ Standalone build of the [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streamin
 
 Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
 
-Download, serve and inspect RTMP streams. Ships as one multicall binary that dispatches to the upstream tools:
+Download, serve and inspect RTMP streams. Ships as one binary providing the upstream programs:
 
 - `rtmpdump` — download an RTMP/RTMPE/RTMPS stream to a file.
 - `rtmpgw` — HTTP gateway that proxies RTMP streams over HTTP.
 - `rtmpsrv` — minimal RTMP server that logs the parameters a client connects with.
 - `rtmpsuck` — transparent proxy that captures streams passing through it.
 
-Run a tool by name or via the dispatcher:
+## Usage
+
+Run a program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-rtmpdump -r rtmp://example/live -o out.flv   # by name
-rtmp dump -r rtmp://example/live -o out.flv   # via the rtmp dispatcher
+unpin rtmpdump rtmpdump -r rtmp://example/live -o out.flv
+unpin rtmpdump rtmpgw --help
 ```
 
-## Installation
-
-Install with [unpin](https://github.com/unpins/unpin):
+To install the programs onto your PATH:
 
 ```bash
-unpin rtmpdump
+unpin install rtmpdump
 ```
 
-Or run without installing:
-
-```bash
-unpin run rtmpdump -- rtmpdump --help
-```
+`unpin install rtmpdump` creates the `rtmpdump`, `rtmpgw`, `rtmpsrv`, and `rtmpsuck` commands.
 
 ## Build locally
 
