@@ -20,22 +20,11 @@ unpin rtmpdump rtmpdump -r rtmp://example/live -o out.flv
 unpin rtmpdump rtmpgw --help
 ```
 
-To install the programs onto your PATH:
+`unpin install rtmpdump` also creates the commands `rtmpdump` (download a stream), `rtmpgw` (HTTP gateway), `rtmpsrv` (logging server) and `rtmpsuck` (capturing proxy):
 
 ```bash
 unpin install rtmpdump
 ```
-
-`unpin install rtmpdump` creates the `rtmpdump`, `rtmpgw`, `rtmpsrv`, and `rtmpsuck` commands.
-
-## Programs
-
-| command | what it does |
-| --- | --- |
-| `rtmpdump` | download an RTMP/RTMPE/RTMPS stream to a file |
-| `rtmpgw` | HTTP gateway that proxies RTMP over HTTP |
-| `rtmpsrv` | minimal RTMP server that logs a client's connect parameters |
-| `rtmpsuck` | transparent proxy that captures streams passing through it |
 
 ## Build locally
 
