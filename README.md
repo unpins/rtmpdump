@@ -1,13 +1,13 @@
 # rtmpdump
 
-Standalone build of the [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streaming programs.
+The [rtmpdump](https://rtmpdump.mplayerhq.hu/) RTMP streaming programs, as a single self-contained binary built natively for Linux, macOS, and Windows.
 
 [![Build](https://github.com/unpins/rtmpdump/actions/workflows/rtmpdump.yml/badge.svg)](https://github.com/unpins/rtmpdump/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
 ![macOS](https://img.shields.io/badge/macOS-✓-success?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-✓-success?logo=windows&logoColor=white)
 
-Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
+Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install rtmpdump`.
 
 Download, serve and inspect RTMP streams.
 
@@ -26,6 +26,10 @@ unpin rtmpdump rtmpgw --help
 unpin install rtmpdump
 ```
 
+## Man pages
+
+`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
+
 ## Build locally
 
 ```bash
@@ -34,10 +38,6 @@ nix build github:unpins/rtmpdump
 ```
 
 The first invocation will offer to add the [unpins.cachix.org](https://unpins.cachix.org) substituter so most pulls come pre-built.
-
-## Man pages
-
-`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
 
 ## Manual download
 
