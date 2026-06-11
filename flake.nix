@@ -1,5 +1,5 @@
 {
-  description = "Standalone build of the rtmpdump RTMP streaming toolkit";
+  description = "the rtmpdump RTMP streaming toolkit as a single self-contained binary";
 
   nixConfig = {
     extra-substituters = [ "https://unpins.cachix.org" ];
