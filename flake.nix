@@ -39,6 +39,7 @@
     in
     ulib.mkStandaloneFlake {
       inherit self;
+      dnsFallback = true; # resolves hostnames; opt into the Android DNS fallback
       name = "rtmp";
 
       build = pkgs:
