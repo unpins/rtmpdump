@@ -69,8 +69,11 @@ let
       done
 
       # Dispatcher (shared canonical generator — see nix-lib
-      # lib.multicallDispatcherC). Reads multicall/apps.list (written above).
-${lib.multicallDispatcherC { inherit name; }}
+      # lib.multicallTableDispatcherC). It reads multicall/applets.list as a TSV
+      # (tool<TAB>C-symbol); rtmpdump's tool names have no dashes so san == name.
+      : > multicall/applets.list
+      for a in "''${apps[@]}"; do printf '%s\t%s\n' "$a" "$a" >> multicall/applets.list; done
+${lib.multicallTableDispatcherC { inherit name; }}
       $CC -O2 -c -o multicall/dispatcher.o multicall/dispatcher.c
 
       # Reuse the package's own resolved link line for rtmpgw (carries thread.o
