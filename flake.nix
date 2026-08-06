@@ -62,7 +62,6 @@
 
       engine = "unpin-llvm";
       multicall = {
-        defaultProgram = "rtmpdump";
         programs = [
           { name = "rtmpdump"; }
           { name = "rtmpgw"; }
