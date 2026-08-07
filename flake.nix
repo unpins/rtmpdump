@@ -62,11 +62,15 @@
 
       engine = "unpin-llvm";
       multicall = {
+        # rtmpsrv and rtmpsuck are servers: they print a banner and start
+        # listening, so `--help` never returns (measured: 338 MB of output in
+        # 20 s). `noHelp` keeps them announced and in the dispatch table while
+        # telling the CI sweep not to run them.
         programs = [
           { name = "rtmpdump"; }
           { name = "rtmpgw"; }
-          { name = "rtmpsrv"; }
-          { name = "rtmpsuck"; }
+          { name = "rtmpsrv"; noHelp = true; }
+          { name = "rtmpsuck"; noHelp = true; }
         ];
       };
 
