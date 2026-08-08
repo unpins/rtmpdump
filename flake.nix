@@ -15,8 +15,8 @@
   # bitcode) and let mkStandaloneFlake's bitcode self-fold pack the four tools
   # into one binary. rtmpdump's only real deps are OpenSSL + zlib, which stay
   # ordinary pkgsStatic `.a`s — the self-fold links them as external native
-  # archives (nothing to engine-build). Windows (mingw, no engine → native
-  # objects) still uses ./multicall.nix's make/objcopy fold.
+  # archives (nothing to engine-build). Windows takes the same route through
+  # the mingw engine adapter.
   #
   # Crypto: full CRYPTO=OPENSSL (upstream default), so rtmpe:// / rtmpte:// /
   # rtmps:// and SWF verification all work. This is the documented exception
@@ -28,7 +28,6 @@
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
-      mk = pkgs: extra: import ./multicall.nix { lib = pkgs.lib // ulib; } extra;
 
       # Pure C, lto + link capture so the self-fold can relink the four tools.
       engStdenv = pkgs:
@@ -62,6 +61,7 @@
 
       engine = "unpin-llvm";
       multicall = {
+        windows = true;
         # rtmpsrv and rtmpsuck are servers: they print a banner and start
         # listening, so `--help` never returns (measured: 338 MB of output in
         # 20 s). `noHelp` keeps them announced and in the dispatch table while
@@ -78,15 +78,18 @@
         let eng = engStdenv pkgs; in
         withCrypto (pkgs.pkgsStatic.rtmpdump.override { stdenv = eng; });
 
-      # mingw cross. The tools force the C runtime static so the .exe carries
-      # no libwinpthread-1 / libgcc_s DLLs; OpenSSL's static libs pull extra
-      # Win32 syscall deps that multicall.nix appends (see there).
+      # mingw cross.
       windowsBuild = pkgs:
         let cross = ulib.mingwStaticCross pkgs; in
-        mk pkgs {
-          pkgs = cross;
-          rtmpdump = withCrypto cross.rtmpdump;
-          extraLinkFlags = "-static -static-libgcc";
-        };
+        (withCrypto cross.rtmpdump).overrideAttrs (old: {
+          # OpenSSL's static libs reference Win32 crypto/socket APIs the
+          # Makefile's LIBS_mingw (-lws2_32 -lwinmm -lgdi32) doesn't cover.
+          # NIX_LDFLAGS lands last, so appending them here resolves
+          # BCryptGenRandom / Crypt32 / advapi32 for each tool's own link — the
+          # links the engine captures.
+          preBuild = (old.preBuild or "") + ''
+            export NIX_LDFLAGS="''${NIX_LDFLAGS:-} -lcrypt32 -lbcrypt -lws2_32 -ladvapi32 -luser32"
+          '';
+        });
     };
 }
