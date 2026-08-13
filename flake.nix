@@ -58,6 +58,8 @@
       inherit self;
       dnsFallback = true; # resolves hostnames; opt into the Android DNS fallback
       name = "rtmp";
+      smoke = [ "--unpin-program=rtmpdump" "--help" ];
+      smokePattern = "^RTMPDump v[0-9]+\\.[0-9]+";
 
       engine = "unpin-llvm";
       multicall = {
