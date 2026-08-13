@@ -45,8 +45,8 @@ The [Releases](https://github.com/unpins/rtmpdump/releases) page has standalone 
 
 ## Build notes
 
-- **Single multicall binary** — the four tools are post-linked into one `rtmp`; tool names are recreated as `argv[0]` shims on install.
+- **Single multicall binary** — the four tools are folded into one `rtmp`; installing recreates all four tool names.
 - **Full crypto (OpenSSL)** — `rtmpe://` / `rtmpte://` (encrypted RTMP), `rtmps://` (RTMP over TLS) and SWF verification (`--swfVfy`) all work.
 - **Windows:** `mingw` cross, single `.exe`, no companion DLLs. Ships all four tools.
 
-The multicall link recipe is in [`multicall.nix`](./multicall.nix).
+The fold is done by the unpin-llvm engine, declared in `flake.nix`.
