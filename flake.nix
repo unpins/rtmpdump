@@ -82,7 +82,17 @@
 
       # mingw cross.
       windowsBuild = pkgs:
-        let cross = ulib.mingwStaticCross pkgs; in
+        let
+          # OPENSSLDIR/ENGINESDIR/MODULESDIR default to openssl's own $out, so
+          # the .exe carried live references to `openssl-...-w64-mingw32` and
+          # its `-etc`. The retarget is set-wide ONLY in the engine's native
+          # scope (nix-lib/native-overlay/openssl.nix) -- the mingw and cosmo
+          # scopes have none, so each consumer has to do it. C:/ssl is what the
+          # standalone `openssl` package already uses for its own mingw build.
+          cross = (ulib.mingwStaticCross pkgs).extend (final: prev: {
+            openssl = prev.openssl.overrideAttrs (ulib.retargetOpenssl "C:/ssl");
+          });
+        in
         (withCrypto cross.rtmpdump).overrideAttrs (old: {
           # OpenSSL's static libs reference Win32 crypto/socket APIs the
           # Makefile's LIBS_mingw (-lws2_32 -lwinmm -lgdi32) doesn't cover.
