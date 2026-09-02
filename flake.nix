@@ -71,8 +71,11 @@
         programs = [
           { name = "rtmpdump"; }
           { name = "rtmpgw"; }
-          { name = "rtmpsrv"; noHelp = true; }
-          { name = "rtmpsuck"; noHelp = true; }
+          # rtmpdump installs three pages — rtmpdump.1, rtmpgw.1 and the
+          # librtmp.3 library page — and none for the two servers, which get
+          # neither a page nor a --help that returns.
+          { name = "rtmpsrv"; noHelp = true; noMan = true; }
+          { name = "rtmpsuck"; noHelp = true; noMan = true; }
         ];
       };
 
