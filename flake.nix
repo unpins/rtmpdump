@@ -45,8 +45,50 @@
       # pkgsStatic / mingw-static toolchains can't link a shared object
       # (`crtbeginT.o R_X86_64_32 against __TMC_END__`). The `all` target then
       # reduces to librtmp.a + the four tools.
+      #
+      # The install also puts librtmp.3, the C library's API page, next to the two
+      # program pages. The library isn't shipped, so the page doesn't go into the
+      # binary either.
       withCrypto = drv: drv.overrideAttrs (oa: {
         makeFlags = (oa.makeFlags or [ ]) ++ [ "SHARED=no" ];
+        # At postInstall the pages are still where `make install` put them
+        # ($out/man); the fixup moves them to share/man afterwards.
+        postInstall = (oa.postInstall or "") + ''
+          rm -rf "$out/man/man3" "$out/share/man/man3"
+        '';
+      });
+
+      # A `--help` smoke passes a binary that cannot fetch a stream, so the native
+      # build downloads one for real: ffmpeg serves a short FLV over RTMP on
+      # loopback, rtmpdump saves it, and the saved video frames must match the
+      # source. Runs wherever the build machine can execute the result.
+      withRoundTrip = pkgs: drv: drv.overrideAttrs (old: {
+        doInstallCheck = pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform;
+        nativeInstallCheckInputs = (old.nativeInstallCheckInputs or [ ])
+          ++ [ pkgs.buildPackages.ffmpeg-headless ];
+        installCheckPhase = ''
+          runHook preInstallCheck
+          fail() { echo "installCheck: $*"; exit 1; }
+          ffmpeg -v error -f lavfi -i testsrc2=size=160x120:rate=25 -t 2 -c:v flv1 src.flv
+          frames() { ffmpeg -v error -i "$1" -map 0:v -f framemd5 - | grep -v '^#' | cut -d, -f2-; }
+          frames src.flv > src.frames
+          for attempt in 1 2 3; do
+            port=$((20000 + RANDOM % 20000))
+            ffmpeg -v error -re -i src.flv -c copy -f flv -listen 1 "rtmp://127.0.0.1:$port/live/s" &
+            server=$!
+            sleep 2
+            rc=0
+            timeout 60 "$out/bin/rtmpdump" -q -r "rtmp://127.0.0.1:$port/live/s" -o out.flv || rc=$?
+            kill "$server" 2>/dev/null || true
+            wait "$server" 2>/dev/null || true
+            [ "$rc" -eq 0 ] && break
+          done
+          [ "$rc" -eq 0 ] || fail "rtmpdump could not download the stream (rc=$rc)"
+          frames out.flv > out.frames
+          cmp -s src.frames out.frames || fail "downloaded video differs from the source"
+          echo "installCheck: rtmpdump downloaded the stream intact"
+          runHook postInstallCheck
+        '';
       });
 
       # Man set: rtmpdump.1 + rtmpgw.8 (the only two CLI man pages upstream
@@ -71,9 +113,9 @@
         programs = [
           { name = "rtmpdump"; }
           { name = "rtmpgw"; }
-          # rtmpdump installs three pages — rtmpdump.1, rtmpgw.1 and the
-          # librtmp.3 library page — and none for the two servers, which get
-          # neither a page nor a --help that returns.
+          # rtmpdump installs pages for these two (rtmpdump.1, rtmpgw.8) and
+          # none for the two servers, which get neither a page nor a --help that
+          # returns. (The librtmp.3 library page is dropped in withCrypto.)
           { name = "rtmpsrv"; noHelp = true; noMan = true; }
           { name = "rtmpsuck"; noHelp = true; noMan = true; }
         ];
@@ -81,7 +123,7 @@
 
       build = pkgs:
         let eng = engStdenv pkgs; in
-        withCrypto (pkgs.pkgsStatic.rtmpdump.override { stdenv = eng; });
+        withRoundTrip pkgs (withCrypto (pkgs.pkgsStatic.rtmpdump.override { stdenv = eng; }));
 
       # mingw cross.
       windowsBuild = pkgs:

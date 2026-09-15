@@ -16,25 +16,28 @@ Download, serve and inspect RTMP streams.
 Run a program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin rtmpdump rtmpdump -r rtmp://example/live -o out.flv
-unpin rtmpdump rtmpgw --help
+unpin rtmpdump --unpin-program=rtmpdump -r rtmp://example.com/live/stream -o out.flv
+unpin rtmpdump --unpin-program=rtmpgw -g 8080
 ```
 
-`unpin install rtmpdump` also creates the commands `rtmpdump` (download a stream), `rtmpgw` (HTTP gateway), `rtmpsrv` (logging server) and `rtmpsuck` (capturing proxy):
+Or install them and call each by name, which is usually what you want:
 
 ```bash
 unpin install rtmpdump
+rtmpdump -r rtmp://example.com/live/stream -o out.flv
 ```
+
+`unpin install rtmpdump` creates the `rtmpdump` (download a stream), `rtmpgw` (HTTP gateway), `rtmpsrv` (logging server) and `rtmpsuck` (capturing proxy) commands.
 
 ## Man pages
 
-`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read with `unpin man rtmpdump`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
+`rtmpdump.1` and `rtmpgw.8` are embedded in the binary — read one with `unpin man rtmpdump rtmpgw`. `rtmpsrv` and `rtmpsuck` have no upstream man pages.
 
 ## Build locally
 
 ```bash
 nix build github:unpins/rtmpdump
-./result/bin/rtmp
+./result/bin/rtmp --unpin-program=rtmpdump --help
 ```
 
 The first invocation will offer to add the [unpins.cachix.org](https://unpins.cachix.org) substituter so most pulls come pre-built.
@@ -45,8 +48,6 @@ The [Releases](https://github.com/unpins/rtmpdump/releases) page has standalone 
 
 ## Build notes
 
-- **Single multicall binary** — the four tools are folded into one `rtmp`; installing recreates all four tool names.
-- **Full crypto (OpenSSL)** — `rtmpe://` / `rtmpte://` (encrypted RTMP), `rtmps://` (RTMP over TLS) and SWF verification (`--swfVfy`) all work.
-- **Windows:** `mingw` cross, single `.exe`, no companion DLLs. Ships all four tools.
-
-The fold is done by the unpin-llvm engine, declared in `flake.nix`.
+- **One binary, `rtmp`,** holds the four programs; `unpin install` creates a command for each.
+- **Encrypted and TLS streams work:** `rtmpe://`, `rtmpte://`, `rtmps://`, and SWF verification (`--swfVfy`).
+- **Windows:** a single `.exe`, no companion DLLs, with all four programs.
