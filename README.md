@@ -50,4 +50,4 @@ The [Releases](https://github.com/unpins/rtmpdump/releases) page has standalone 
 
 - **One binary, `rtmp`,** holds the four programs; `unpin install` creates a command for each.
 - **Encrypted and TLS streams work:** `rtmpe://`, `rtmpte://`, `rtmps://`, and SWF verification (`--swfVfy`).
-- **Windows:** built with mingw-w64, with all four programs.
+- **Windows:** built with mingw-w64.
