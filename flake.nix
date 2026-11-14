@@ -11,11 +11,9 @@
   # rtmpdump ships four CLI tools (rtmpdump / rtmpgw / rtmpsrv / rtmpsuck)
   # folded into one argv[0]-dispatching `rtmp` binary.
   #
-  # Native (Linux/darwin): build under the unpin-llvm engine (all objects LLVM
-  # bitcode) and let mkStandaloneFlake's bitcode self-fold pack the four tools
-  # into one binary. rtmpdump's only real deps are OpenSSL + zlib, which stay
-  # ordinary pkgsStatic `.a`s — the self-fold links them as external native
-  # archives (nothing to engine-build). Windows takes the same route through
+  # Native (Linux/darwin): the whole closure, OpenSSL and zlib included, comes
+  # from the engine's pkgsStatic, and mkStandaloneFlake's bitcode self-fold
+  # packs the four tools into one binary. Windows takes the same route through
   # the mingw engine adapter.
   #
   # Crypto: full CRYPTO=OPENSSL (upstream default), so rtmpe:// / rtmpte:// /
@@ -23,8 +21,8 @@
   # to the mbedtls-over-OpenSSL policy (docs/crypto-backend.md): rtmpdump
   # only offers OpenSSL / GnuTLS / PolarSSL, and its PolarSSL path is the
   # obsolete 1.x API (no drop-in to nixpkgs' mbedtls 3.x), so OpenSSL is the
-  # only working full-feature option. ffmpeg sidesteps this entirely — it
-  # drops --enable-librtmp and uses native rtmp via its own mbedtls.
+  # only working full-feature option. ffmpeg does not use librtmp: its native
+  # rtmp runs over the OpenSSL it already links.
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
@@ -80,8 +78,8 @@
       });
 
       # Man set: rtmpdump.1 + rtmpgw.8 (the only two CLI man pages upstream
-      # ships — rtmpsrv/rtmpsuck have none). The stock derivation installs both
-      # into $out/share/man, so mkStandaloneFlake's withMan harvests them on
+      # ships — rtmpsrv/rtmpsuck have none). The pages end up in
+      # $out/share/man, where mkStandaloneFlake's withMan harvests them on
       # every target (windows harvests its OWN man — same source, no graft).
     in
     ulib.mkStandaloneFlake {
