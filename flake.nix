@@ -29,18 +29,6 @@
     let
       ulib = unpins-lib.lib;
 
-      # Pure C, lto + link capture so the self-fold can relink the four tools.
-      engStdenv = pkgs:
-        let sp = pkgs.pkgsStatic; in
-        ulib.unpinAdapterStdenv {
-          inherit pkgs;
-          target = sp.stdenv.hostPlatform.config;
-          native = pkgs.stdenv.buildPlatform.system == pkgs.stdenv.hostPlatform.system;
-          cxx = false;
-          lto = true;
-          captureLinks = true;
-        };
-
       # Keep CRYPTO=OPENSSL (the package default) but stop the librtmp.so build —
       # pkgsStatic / mingw-static toolchains can't link a shared object
       # (`crtbeginT.o R_X86_64_32 against __TMC_END__`). The `all` target then
@@ -121,9 +109,8 @@
         ];
       };
 
-      build = pkgs:
-        let eng = engStdenv pkgs; in
-        withRoundTrip pkgs (withCrypto (pkgs.pkgsStatic.rtmpdump.override { stdenv = eng; }));
+      # pkgsStatic is already on the engine adapter (nix-lib swaps the set).
+      build = pkgs: withRoundTrip pkgs (withCrypto pkgs.pkgsStatic.rtmpdump);
 
       # mingw cross.
       windowsBuild = pkgs:
